@@ -1,3 +1,11 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
 name: Java CI with Maven
 
 on:
@@ -67,7 +75,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@master
 
       - name: Install Snyk CLI
         run: |
@@ -75,7 +83,7 @@ jobs:
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/maven@master
-        continue-on-error: true
+        continue-on-error: true  # To make sure that SARIF upload gets called
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -87,18 +95,15 @@ jobs:
           sarif_file: snyk.sarif
 
   deploy:
-    #Depends on build's job
     needs: build
     name: Deploy
-    #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
     steps:
       - name: Download JAR
-        #Download the artifact which was uploaded in the build's job
         uses: actions/download-artifact@v2
         with:
           name: artifact
-      #Deploy the artifact (JAR) into AWS Beanstalk
+
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v13
         with:
@@ -108,6 +113,7 @@ jobs:
           use_existing_version_if_available: false
           application_name: Spring-Boot-DataRest
           environment_name: Spring-Boot-DataRest-env
-          version_label: ${{github.SHA}}
+          version_label: ${{ github.SHA }}
           region: ap-southeast-1
           deployment_package: cicd-demo-0.0.1-SNAPSHOT.jar
+      
