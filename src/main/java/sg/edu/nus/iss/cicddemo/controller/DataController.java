@@ -9,7 +9,6 @@ import com.github.javafaker.Faker;
 
 @RestController
 public class DataController {
-
 	@GetMapping("/")
 	public String healthCheck() {
 		return "HEALTH CHECK OK!";

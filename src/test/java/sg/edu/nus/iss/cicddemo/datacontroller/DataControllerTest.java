@@ -9,15 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import sg.edu.nus.iss.cicddemo.controller.DataController;
 
 @SpringBootTest
-class DataControllerTest {
+public class DataControllerTest {
 	@Autowired
 	DataController dataController;
 
 	@Test
-	void testHealthCheck() {
-		// Perform the health check and verify the result
-		String result = dataController.healthCheck();
-		assertEquals("HEALTH CHECK OK!", result);
+	void health() {
+		assertEquals("HEALTH CHECK OK!", dataController.healthCheck());
 	}
 
 	@Test
